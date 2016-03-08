@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 
 // user schema fields
 
-var userSchema = new Schema({
+var UserSchema = new Schema({
 	email: {
 		type: String,
 		unique: true,
@@ -36,7 +36,7 @@ var userSchema = new Schema({
 
 
 // hash password before saving to database
-userSchema.pre('save', function (next) {
+UserSchema.pre('save', function (next) {
 	var user = this;
 	if (!user.isModified('password')) {
 		return next();
@@ -57,12 +57,12 @@ userSchema.pre('save', function (next) {
 
 // compare password in database to one user typed in
 
-userSchema.methods.authenticate = function (password) {
+UserSchema.methods.authenticate = function (password) {
 	return bcrypt.compareSync(password, this.password);
 }
 
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", UserSchema);
 
 
 

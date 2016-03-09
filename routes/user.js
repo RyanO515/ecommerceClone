@@ -40,6 +40,7 @@ router.post("/signup", function (req, res, next) {
 	user.profile.name = req.body.name;
 	user.email = req.body.email;
 	user.password = req.body.password;
+	user.profile.picture = user.gravatar();
 	
 
 	User.findOne({ email: req.body.email }, function (err, existingUser) {
@@ -52,7 +53,11 @@ router.post("/signup", function (req, res, next) {
 					return next(err);
 				}
 
-				return res.redirect('/');
+				//logIn function will save cookie on the browser&session on server
+				req.logIn(user, function(err) {
+					if (err) return next(err);
+					res.redirect('/profile');
+				})
 			});
 		}
 	});
@@ -66,3 +71,7 @@ router.get('logout', function (req, res, next) {
 
 
 module.exports = router;
+
+
+
+

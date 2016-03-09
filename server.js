@@ -7,12 +7,15 @@ var engine = require("ejs-mate");
 var session = require("express-session");
 var cookieParser = require("cookie-parser");
 var flash = require('express-flash');
+var MongoStore = require('connect-mongo/es5')(session);  //specifically to store session on server side
+var passport = require('passport');
 
+var secret = require('./config/secret');
 var User = require("./models/user");
 
 var app = express();
 
-mongoose.connect('mongodb://root:ramman15@ds023458.mlab.com:23458/ecommerce123', function (err) {
+mongoose.connect(secret.database, function (err) {
 	if (err) {
 		console.log(err);
 	} else {
@@ -29,9 +32,12 @@ app.use(cookieParser());
 app.use(session({
 	resave: true,
 	saveUninitialized: true,
-	secret: 'Ryan@123'
+	secret: secret.secretKey,
+	store: new MongoStore({ url: secret.database, autoReconnect: true})
 }));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 app.engine('ejs', engine);
@@ -46,8 +52,8 @@ app.use(userRoutes);
 
 
 
-app.listen(3000, function () {
-	console.log("Server is running!");
+app.listen(secret.port, function () {
+	console.log("Server is running on port " + secret.port);
 });
 
 

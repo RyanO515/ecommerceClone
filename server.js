@@ -12,6 +12,7 @@ var passport = require('passport');
 
 var secret = require('./config/secret');
 var User = require("./models/user");
+var Category = require("./models/categories");
 
 var app = express();
 
@@ -42,6 +43,14 @@ app.use(function (req, res, next) {
 	res.locals.user = req.user;
 	//locals is a local variable
 	next();
+});
+app.use(function (req, res, next) {
+	Category.find({}, function (err, categories) {
+		if (err) return next(err);
+
+		res.locals.categories = categories;
+		next();
+	});
 });
 
 
